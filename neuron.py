@@ -4,9 +4,21 @@ This is a simple neuron class to initialize and calculate a neuron a layer
 import numpy as np
 
 np.random.seed(0)  # seed for random number generator
-X = [[1, 2, 3, 2.5],
-     [2.0, 5.0, -1.0, 2.0],
-     [-1.5, 2.7, 3.3, -0.8]]  # input data to neural network
+# X = [[1, 2, 3, 2.5],
+#      [2.0, 5.0, -1.0, 2.0],
+#      [-1.5, 2.7, 3.3, -0.8]]  # input data to neural network
+
+
+def spiral_data(samples, classes):
+    X = np.zeros((samples * classes, 2))
+    y = np.zeros(samples * classes, dtype='uint8')
+    for class_number in range(classes):
+        ix = range(samples * class_number, samples * (class_number + 1))
+        r = np.linspace(0.0, 1, samples)  # radius
+        t = np.linspace(class_number * 4, (class_number + 1) * 4, samples) + np.random.randn(samples) * 0.2
+        X[ix] = np.c_[r * np.sin(t * 2.5), r * np.cos(t * 2.5)]
+        y[ix] = class_number
+    return X, y
 
 
 # initialize weights - random values -1 to 1 ranged to avoid nuber explosion
@@ -28,13 +40,28 @@ class Activation_ReLU:
         self.output = np.maximum(0, inputs)
 
 
-layer1 = Layer_Dense(4, 5)
-# layer2 = Layer_Dense(5, 2)
-layer1.forward(X)
-# print(layer1.output)
-# layer2.forward(layer1.output)
-# print(layer2.output)
+class Activation_Softmax:
+    def __init__(self):
+        self.inputs = None
+        self.output = None
 
-activation1 = Activation_ReLU()
-activation1.forward(layer1.output)
-print(activation1.output)
+    def forward(self, inputs):
+        exp_values = np.exp(inputs - np.max(inputs, axis=1, keepdims=True))
+        probabilities = exp_values / np.sum(exp_values, axis=1, keepdims=True)
+        self.output = probabilities
+
+
+X, y = spiral_data(samples=100, classes=3)
+
+dense1 = Layer_Dense(2, 3)
+activation1 = Activation_Softmax()
+
+dense2: Layer_Dense = Layer_Dense(3, 3)
+activation2 = Activation_Softmax()
+
+dense1.forward(X)
+activation1.forward(dense1.output)
+dense2.forward(activation1.output)
+activation2.forward(dense2.output)
+
+print(activation2.output[:5])
