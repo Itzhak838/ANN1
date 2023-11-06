@@ -4,9 +4,6 @@ This is a simple neuron class to initialize and calculate a neuron a layer
 import numpy as np
 
 np.random.seed(0)  # seed for random number generator
-# X = [[1, 2, 3, 2.5],
-#      [2.0, 5.0, -1.0, 2.0],
-#      [-1.5, 2.7, 3.3, -0.8]]  # input data to neural network
 
 
 def spiral_data(samples, classes):
@@ -42,13 +39,24 @@ class Activation_ReLU:
 
 class Activation_Softmax:
     def __init__(self):
-        self.inputs = None
         self.output = None
 
     def forward(self, inputs):
         exp_values = np.exp(inputs - np.max(inputs, axis=1, keepdims=True))
         probabilities = exp_values / np.sum(exp_values, axis=1, keepdims=True)
         self.output = probabilities
+
+
+class Loss:
+    def calculate(self, output, y):
+        sample_losses = self.forward(output, y)
+        data_loss = np.mean(sample_losses)
+        return data_loss
+
+
+class Loss_CategoricalCrossentropy(Loss):
+    def forward(self, y_pred, ):
+        pass
 
 
 X, y = spiral_data(samples=100, classes=3)
