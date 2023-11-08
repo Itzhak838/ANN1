@@ -6,7 +6,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 np.random.seed(0)  # seed for random number generator
 
-
 def spiral_data(samples, classes):
     """
     create a spiral dataset to test the ANN
